@@ -1,0 +1,6 @@
+output:
+  router_delegate_gen.go
+package: boundary
+generate:
+  - server
+  - types

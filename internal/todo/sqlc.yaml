@@ -1,0 +1,7 @@
+version: 1
+packages:
+  - path: "entity"
+    name: "entity"
+    engine: "mysql"
+    schema: "entity/schema.sql"
+    queries: "entity/query.sql"

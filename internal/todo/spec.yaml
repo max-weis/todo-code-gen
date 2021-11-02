@@ -1,0 +1,330 @@
+openapi: 3.0.1
+info:
+  title: To-do List
+  description: This OAS3 file represents the Todo-List API that lives
+    at http://localhost:8080.
+  contact:
+    name: Max Weis
+    url: funsociety.dev
+  license:
+    name: MIT
+  version: "1.0"
+servers:
+- url: http://localhost:8080/
+tags:
+- name: Todos
+paths:
+  /todos/{todo-id}:
+    get:
+      tags:
+      - Todos
+      summary: Get Todo
+      description: Request an existing todo.
+      operationId: getTodo
+      parameters:
+      - name: todo-id
+        in: path
+        description: The todo identifier.
+        required: true
+        schema:
+          type: integer
+      responses:
+        200:
+          description: Todo found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/todo-full'
+              example:
+                id: 1
+                title: clean fridge
+                description: It's a mess
+                done: false
+        404:
+          description: Todo not found.
+          content: {}
+    put:
+      tags:
+      - Todos
+      summary: Update Todo
+      description: Update an existing todo.
+      operationId: updateTodo
+      parameters:
+      - name: todo-id
+        in: path
+        description: The todo identifier.
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        description: The modified todo.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/todo-base'
+        required: false
+      responses:
+        204:
+          description: Todo updated.
+          content: {}
+        400:
+          description: Invalid modified todo.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/error-response'
+              example:
+              - code: TITLE_NULL
+                message: title must not be null
+              - code: TITLE_SIZE
+                message: title size must be between 1 and 30
+              - code: DESCRIPTION_SIZE
+                message: description size must be between 0 and 500
+        404:
+          description: Todo not found.
+          content: {}
+      x-codegen-request-body-name: body
+    delete:
+      tags:
+      - Todos
+      summary: Delete Todo
+      description: Delete an existing todo.
+      operationId: deleteTodo
+      parameters:
+      - name: todo-id
+        in: path
+        description: The todo identifier.
+        required: true
+        schema:
+          type: integer
+      responses:
+        204:
+          description: Todo deleted.
+          content: {}
+        404:
+          description: Todo not found.
+          content: {}
+  /todos:
+    get:
+      tags:
+      - Todos
+      summary: List todos
+      description: Get a list of todos.
+      operationId: getTodos
+      parameters:
+      - name: state
+        in: query
+        description: Filters all or unfinished todos in the response
+        schema:
+          type: string
+          default: unfinished
+          enum:
+          - all
+          - unfinished
+      - name: limit
+        in: query
+        description: Maximal number of todos in the response
+        schema:
+          maximum: 10
+          minimum: 0
+          type: integer
+          default: 5
+      - name: offset
+        in: query
+        description: Offset for the todos in the response
+        schema:
+          maximum: 100
+          minimum: 0
+          type: integer
+      responses:
+        200:
+          description: List of todos.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/todo-list'
+              example:
+              - id: 1
+                title: clean fridge
+                done: false
+              - id: 2
+                title: clean bathrom
+                done: false
+              - id: 3
+                title: bring out garbage
+                done: false
+              - id: 4
+                title: go to supermarket
+                done: true
+              - id: 5
+                title: write user stories
+                done: false
+              - id: 6
+                title: pay bills
+                done: false
+              - id: 7
+                title: call mum
+                done: false
+        204:
+          description: Empty list of todos
+          content: {}
+        206:
+          description: Partial list of todos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/todo-list'
+              example:
+              - id: 1
+                title: clean fridge
+                done: false
+              - id: 2
+                title: clean bathrom
+                done: false
+              - id: 3
+                title: bring out garbage
+                done: false
+              - id: 4
+                title: go to supermarket
+                done: true
+              - id: 5
+                title: write user stories
+                done: false
+        400:
+          description: Invalid query params
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/error-response'
+              example:
+              - code: STATE_INVALID
+                message: state must be ALL or UNFINISHED
+              - code: LIMIT_MIN
+                message: limit must be greater or equal to 0
+              - code: LIMIT_MAX
+                message: limit must be less or equal to 10
+              - code: OFFSET_MIN
+                message: offset must be greater or equal to 0
+              - code: OFFSET_MAX
+                message: offset must be less or equal to 100
+    post:
+      tags:
+      - Todos
+      summary: Create Todo
+      description: Create a new todo.
+      operationId: createTodo
+      requestBody:
+        description: The new todo.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/todo-base'
+        required: false
+      responses:
+        201:
+          description: Todo created.
+          headers:
+            ETag:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/todo-full'
+              example:
+                id: 1
+                title: clean fridge
+                description: It's a mess
+                done: false
+        400:
+          description: Invalid new todo.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/error-response'
+              example:
+              - code: TITLE_NULL
+                message: title must not be null
+              - code: TITLE_SIZE
+                message: title size must be between 1 and 30
+              - code: DESCRIPTION_SIZE
+                message: description size must be between 0 and 500
+      x-codegen-request-body-name: body
+components:
+  schemas:
+    todo-full:
+      title: Full Todo
+      description: The full todo with identifier used as response object.
+      allOf:
+      - $ref: '#/components/schemas/todo-base'
+      - required:
+        - id
+        type: object
+        properties:
+          id:
+            maximum: 1E+6
+            minimum: 0
+            type: integer
+    todo-base:
+      title: Base Todo
+      required:
+      - done
+      - title
+      type: object
+      properties:
+        title:
+          maxLength: 30
+          minLength: 1
+          type: string
+        description:
+          maxLength: 500
+          type: string
+        done:
+          type: boolean
+      description: A base todo used for creation and modification.
+    error-response:
+      title: Error Response
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      description: Error Response
+    todo-list:
+      title: List Todo
+      required:
+      - done
+      - id
+      - title
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        done:
+          type: boolean
+      description: A reduced todo with identifier used as response object for the
+        todo list.
+  responses:
+    500:
+      description: ""
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error-response'
+          example:
+            code: ERROR_CODE
+            message: An internal error occured

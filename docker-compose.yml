@@ -1,0 +1,13 @@
+services:
+
+  mysql:
+    image: mysql
+    environment:
+      MYSQL_USER: mysql
+      MYSQL_ROOT_PASSWORD: mysql
+      MYSQL_DATABASE: todo
+      MYSQL_PASSWORD: mysql
+    volumes:
+      - "./internal/todo/entity/schema.sql:/docker-entrypoint-initdb.d/1-schema.sql"
+    ports:
+      - 3306:3306
