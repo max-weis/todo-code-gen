@@ -18,7 +18,7 @@ var (
 )
 
 func ProvideDatabase(cfg config.DatabaseConfig) *entity.Queries {
-	log.Printf("Try to create connection to database: %s:%d/%s with user: %s", cfg.Host, cfg.Port, cfg.DbName, cfg.User)
+	log.Printf("Try to create connection to database: %s:%s/%s with user: %s", cfg.Host, cfg.Port, cfg.DbName, cfg.User)
 
 	once.Do(func() {
 		dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local&tls=preferred&timeout=5s",
