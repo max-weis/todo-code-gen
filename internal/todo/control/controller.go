@@ -7,12 +7,12 @@ import (
 	"todo-code-gen/internal/todo/entity"
 )
 
-type TodoController interface {
-	GetTodoById(id int) (*entity.Todo, error)
-	ListTodos(limit, offset int) (*[]entity.ListTodosRow, error)
-	CreateTodo(title, description string, status bool) (int, error)
-	UpdateTodo(id int, title, description string, status bool) error
-	DeleteTodoById(id int) error
+type Controller interface {
+	GetTodoById(ctx context.Context, id int) (*entity.Todo, error)
+	ListTodos(ctx context.Context, limit, offset int) (*[]entity.ListTodosRow, error)
+	CreateTodo(ctx context.Context, title, description string, status bool) (int, error)
+	UpdateTodo(ctx context.Context, id int, title, description string, status bool) error
+	DeleteTodoById(ctx context.Context, id int) error
 }
 
 type TodoControllerImpl struct {
@@ -23,9 +23,9 @@ func ProvideController(repository entity.Repository) *TodoControllerImpl {
 	return &TodoControllerImpl{repository: repository}
 }
 
-func (t *TodoControllerImpl) GetTodoById(id int) (*entity.Todo, error) {
+func (t *TodoControllerImpl) GetTodoById(ctx context.Context, id int) (*entity.Todo, error) {
 	log.Infof("Get todo with id: %d", id)
-	todo, err := t.repository.GetTodoById(context.Background(), int64(id))
+	todo, err := t.repository.GetTodoById(ctx, int64(id))
 	if err != nil {
 		log.Warnf("Could not find todo with id: %d", id)
 		return nil, err
@@ -34,9 +34,9 @@ func (t *TodoControllerImpl) GetTodoById(id int) (*entity.Todo, error) {
 	return &todo, nil
 }
 
-func (t *TodoControllerImpl) ListTodos(limit, offset int) (*[]entity.ListTodosRow, error) {
+func (t *TodoControllerImpl) ListTodos(ctx context.Context, limit, offset int) (*[]entity.ListTodosRow, error) {
 	log.Infof("Get todos with limit: %d, offset: %s", limit, offset)
-	todos, err := t.repository.ListTodos(context.Background(), entity.ListTodosParams{
+	todos, err := t.repository.ListTodos(ctx, entity.ListTodosParams{
 		Limit:  int32(limit),
 		Offset: int32(offset),
 	})
@@ -48,12 +48,13 @@ func (t *TodoControllerImpl) ListTodos(limit, offset int) (*[]entity.ListTodosRo
 	return &todos, nil
 }
 
-func (t *TodoControllerImpl) CreateTodo(title, description string, status bool) (int, error) {
+func (t *TodoControllerImpl) CreateTodo(ctx context.Context, title, description string, status bool) (int, error) {
 	log.Infof("Create todo with title: %s, description: %s, status: %t", title, description, status)
-	result, err := t.repository.CreateTodo(context.Background(), entity.CreateTodoParams{
+	id, err := t.repository.CreateTodo(ctx, entity.CreateTodoParams{
 		Title: title,
 		Description: sql.NullString{
 			String: description,
+			Valid:  true,
 		},
 		Status: stateToInt(status),
 	})
@@ -62,21 +63,16 @@ func (t *TodoControllerImpl) CreateTodo(title, description string, status bool) 
 		return -1, err
 	}
 
-	id, err := result.LastInsertId()
-	if err != nil {
-		log.Warnf("Could not get last inserted id")
-		return -1, err
-	}
-
-	return int(id), nil
+	return id, nil
 }
 
-func (t *TodoControllerImpl) UpdateTodo(id int, title, description string, status bool) error {
+func (t *TodoControllerImpl) UpdateTodo(ctx context.Context, id int, title, description string, status bool) error {
 	log.Infof("Update todo with id: %d", id)
-	err := t.repository.UpdateTodo(context.Background(), entity.UpdateTodoParams{
+	err := t.repository.UpdateTodo(ctx, entity.UpdateTodoParams{
 		Title: title,
 		Description: sql.NullString{
 			String: description,
+			Valid:  true,
 		},
 		Status: stateToInt(status),
 		ID:     int64(id),
@@ -89,9 +85,9 @@ func (t *TodoControllerImpl) UpdateTodo(id int, title, description string, statu
 	return nil
 }
 
-func (t *TodoControllerImpl) DeleteTodoById(id int) error {
+func (t *TodoControllerImpl) DeleteTodoById(ctx context.Context, id int) error {
 	log.Infof("Delete todo with id: %d", id)
-	return t.repository.DeleteTodoById(context.Background(), int64(id))
+	return t.repository.DeleteTodoById(ctx, int64(id))
 }
 
 func stateToInt(state bool) int32 {

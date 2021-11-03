@@ -1,6 +1,7 @@
 package boundary
 
 import (
+	"context"
 	"fmt"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
@@ -9,10 +10,10 @@ import (
 )
 
 type TodoRouter struct {
-	controller control.TodoController
+	controller control.Controller
 }
 
-func ProvideRouter(controller control.TodoController) *TodoRouter {
+func ProvideRouter(controller control.Controller) *TodoRouter {
 	return &TodoRouter{controller: controller}
 }
 
@@ -21,7 +22,7 @@ func (t *TodoRouter) RegisterHandlersWithBaseURL(router EchoRouter, baseURL stri
 }
 
 func (t *TodoRouter) GetTodos(ctx echo.Context, params GetTodosParams) error {
-	todos, err := t.controller.ListTodos(*params.Limit, *params.Offset)
+	todos, err := t.controller.ListTodos(context.Background(), *params.Limit, *params.Offset)
 	if err != nil {
 		log.Errorf("could not get dto: %+v", err)
 		return err
@@ -44,7 +45,7 @@ func (t *TodoRouter) CreateTodo(ctx echo.Context) error {
 		return err
 	}
 
-	id, err := t.controller.CreateTodo(base.Title, *base.Description, base.Done)
+	id, err := t.controller.CreateTodo(context.Background(), base.Title, *base.Description, base.Done)
 	if err != nil {
 		log.Errorf("could not create todo: %+v", err)
 		return err
@@ -61,7 +62,7 @@ func (t *TodoRouter) CreateTodo(ctx echo.Context) error {
 }
 
 func (t *TodoRouter) DeleteTodo(ctx echo.Context, todoId int) error {
-	err := t.controller.DeleteTodoById(todoId)
+	err := t.controller.DeleteTodoById(context.Background(), todoId)
 	if err != nil {
 		log.Errorf("could not remove todo: %+v", err)
 		return err
@@ -71,7 +72,7 @@ func (t *TodoRouter) DeleteTodo(ctx echo.Context, todoId int) error {
 }
 
 func (t *TodoRouter) GetTodo(ctx echo.Context, todoId int) error {
-	todo, err := t.controller.GetTodoById(todoId)
+	todo, err := t.controller.GetTodoById(context.Background(), todoId)
 	if err != nil {
 		log.Errorf("could not get todo: %+v", err)
 		return err
@@ -94,7 +95,7 @@ func (t *TodoRouter) UpdateTodo(ctx echo.Context, todoId int) error {
 		return err
 	}
 
-	err := t.controller.UpdateTodo(todoId, base.Title, *base.Description, base.Done)
+	err := t.controller.UpdateTodo(context.Background(), todoId, base.Title, *base.Description, base.Done)
 	if err != nil {
 		log.Errorf("could not update todo: %+v", err)
 		return err

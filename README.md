@@ -7,6 +7,7 @@ A sample project which demonstrates code generation in Go. Following tools are u
 |  [kyleconroy/sqlc](https://github.com/kyleconroy/sqlc) |  sql queries |
 |  [google/wire](https://github.com/google/wire) | dependency injections  |
 |  [deepmap/oapi-codegen](https://github.com/deepmap/oapi-codegen) | http handlers  |
+|s|mocks|
 
 **install all these tools to build the project on your machine**
 
@@ -24,3 +25,7 @@ Run: `sqlc generate -f internal/todo/sqlc.yaml` to generate the mysql code
 ## Generate dependency injection
 
 Run: `wire` to generate the dependency injection
+
+## Generate mocks
+
+Run: `mockery --all --recursive && rm mocks/DBTX.go mocks/EchoRouter.go mocks/ServerInterface.go`

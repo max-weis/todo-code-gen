@@ -26,7 +26,7 @@ func Initialize() *AppContext {
 		// Todo
 		entity.ProvideRepository,
 		control.ProvideController,
-		wire.Bind(new(control.TodoController), new(*control.TodoControllerImpl)),
+		wire.Bind(new(control.Controller), new(*control.TodoControllerImpl)),
 
 		boundary.ProvideRouter,
 
