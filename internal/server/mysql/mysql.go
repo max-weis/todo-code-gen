@@ -29,6 +29,8 @@ func ProvideDatabase(cfg config.DatabaseConfig) *entity.Queries {
 			log.Err(err).Msg("Could not connect to mysql")
 		}
 		instance = db
+
+		log.Printf("Connected to MySQL")
 	})
 
 	return entity.New(instance)
