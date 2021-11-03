@@ -53,11 +53,3 @@ func stateToBool(state int32) bool {
 
 	return true
 }
-
-func StateToInt(state bool) int32 {
-	if state {
-		return 1
-	}
-
-	return 0
-}
