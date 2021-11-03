@@ -1,0 +1,10 @@
+insert into todos (id, title, description, status) values (1, 'ligula', 'orci pede venenatis non sodales', 0);
+insert into todos (id, title, description, status) values (2, 'duis bibendum morbi non', 'erat quisque erat eros viverra eget congue eget semper', 0);
+insert into todos (id, title, description, status) values (3, 'arcu', 'sem fusce consequat nulla nisl nunc nisl duis bibendum', 0);
+insert into todos (id, title, description, status) values (4, 'tempus vivamus in felis', 'nec nisi volutpat eleifend donec ut', 0);
+insert into todos (id, title, description, status) values (5, 'potenti', 'vulputate ut ultrices vel augue', 1);
+insert into todos (id, title, description, status) values (6, 'potenti in eleifend', 'dui nec nisi volutpat eleifend', 0);
+insert into todos (id, title, description, status) values (7, 'ac est lacinia nisi', 'ultrices phasellus id sapien in sapien iaculis congue', 0);
+insert into todos (id, title, description, status) values (8, 'nibh in lectus pellentesque', 'dui proin leo odio porttitor id consequat in', 1);
+insert into todos (id, title, description, status) values (9, 'massa', 'est lacinia nisi venenatis tristique fusce', 0);
+insert into todos (id, title, description, status) values (10, 'condimentum neque sapien', 'dapibus at diam nam tristique tortor eu', 1);
