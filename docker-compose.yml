@@ -11,3 +11,14 @@ services:
       - "./internal/todo/entity/schema.sql:/docker-entrypoint-initdb.d/1-schema.sql"
     ports:
       - 3306:3306
+
+  todo-service:
+    image: maxweis/todo-code-gen
+    environment:
+      MYSQL_USER: mysql
+      MYSQL_PASSWORD: mysql
+      MYSQL_HOST: mysql
+      MYSQL_POST: 3306
+      MYSQL_DATABASE: todo
+    ports:
+      - 8080:8080

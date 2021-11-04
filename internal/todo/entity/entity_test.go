@@ -1,6 +1,3 @@
-//go:build integration
-// +build integration
-
 package entity
 
 import (
@@ -12,15 +9,29 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
+	"os"
 	"path/filepath"
 	"testing"
 )
+
+var mysqlC mysqlContainer
 
 type mysqlContainer struct {
 	testcontainers.Container
 	host    string
 	port    string
 	queries Queries
+}
+
+func TestMain(m *testing.M) {
+	ctx := context.Background()
+	mysqlC, err := setupMySQL(ctx)
+	if err != nil {
+		os.Exit(1)
+	}
+	code := m.Run()
+	mysqlC.Terminate(ctx)
+	os.Exit(code)
 }
 
 func setupMySQL(ctx context.Context) (*mysqlContainer, error) {
@@ -80,12 +91,9 @@ func setupMySQL(ctx context.Context) (*mysqlContainer, error) {
 }
 
 func TestTodoRepository_CreateTodo(t *testing.T) {
-	ctx := context.Background()
-
-	mysqlC, err := setupMySQL(ctx)
-	assert.Nil(t, err, "container should be started")
-
-	defer mysqlC.Terminate(ctx)
+	if testing.Short() {
+		t.Skip()
+	}
 
 	repository := todoRepository{queries: &mysqlC.queries}
 	id, err := repository.CreateTodo(context.Background(), CreateTodoParams{
@@ -102,26 +110,20 @@ func TestTodoRepository_CreateTodo(t *testing.T) {
 }
 
 func TestTodoRepository_DeleteTodoById(t *testing.T) {
-	ctx := context.Background()
-
-	mysqlC, err := setupMySQL(ctx)
-	assert.Nil(t, err, "container should be started")
-
-	defer mysqlC.Terminate(ctx)
+	if testing.Short() {
+		t.Skip()
+	}
 
 	repository := todoRepository{queries: &mysqlC.queries}
-	err = repository.DeleteTodoById(context.Background(), 1)
+	err := repository.DeleteTodoById(context.Background(), 1)
 
 	assert.Nil(t, err, "err should be nil")
 }
 
 func TestTodoRepository_GetTodoById(t *testing.T) {
-	ctx := context.Background()
-
-	mysqlC, err := setupMySQL(ctx)
-	assert.Nil(t, err, "container should be started")
-
-	defer mysqlC.Terminate(ctx)
+	if testing.Short() {
+		t.Skip()
+	}
 
 	repository := todoRepository{queries: &mysqlC.queries}
 	todo, err := repository.GetTodoById(context.Background(), 1)
@@ -134,15 +136,12 @@ func TestTodoRepository_GetTodoById(t *testing.T) {
 }
 
 func TestTodoRepository_UpdateTodo(t *testing.T) {
-	ctx := context.Background()
-
-	mysqlC, err := setupMySQL(ctx)
-	assert.Nil(t, err, "container should be started")
-
-	defer mysqlC.Terminate(ctx)
+	if testing.Short() {
+		t.Skip()
+	}
 
 	repository := todoRepository{queries: &mysqlC.queries}
-	err = repository.UpdateTodo(context.Background(), UpdateTodoParams{
+	err := repository.UpdateTodo(context.Background(), UpdateTodoParams{
 		Title: "test",
 		Description: sql.NullString{
 			String: "test",
@@ -163,12 +162,9 @@ func TestTodoRepository_UpdateTodo(t *testing.T) {
 }
 
 func TestTodoRepository_ListTodos(t *testing.T) {
-	ctx := context.Background()
-
-	mysqlC, err := setupMySQL(ctx)
-	assert.Nil(t, err, "container should be started")
-
-	defer mysqlC.Terminate(ctx)
+	if testing.Short() {
+		t.Skip()
+	}
 
 	repository := todoRepository{queries: &mysqlC.queries}
 	todos, err := repository.ListTodos(context.Background(), ListTodosParams{

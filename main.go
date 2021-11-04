@@ -17,7 +17,7 @@ func main() {
 	appContext := Initialize()
 
 	e := echo.New()
-	appContext.TodoRouter.RegisterHandlersWithBaseURL(e, "api")
+	appContext.TodoRouter.RegisterHandlersWithBaseURL(e, "")
 	e.Logger = custommiddleware.ProvideZerologAdapter(zerolog.New(os.Stdout))
 
 	configureSwaggerUI(e)
@@ -37,6 +37,7 @@ func main() {
 	prometheus.NewPrometheus("echo", shouldSkipMiddleware).Use(e)
 	e.Use(custommiddleware.AccessLogger(shouldSkipMiddleware))
 
+	e.Logger.Infof("start server on port: %s", "8080")
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", 8080)))
 }
 
