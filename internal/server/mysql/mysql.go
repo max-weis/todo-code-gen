@@ -26,8 +26,16 @@ func ProvideDatabase(cfg config.DatabaseConfig) *entity.Queries {
 
 		db, err := sql.Open("mysql", dsn)
 		if err != nil {
-			log.Err(err).Msg("Could not connect to mysql")
+			log.Err(err).Msg("Could create a connection to MySQL")
+			panic(err)
 		}
+
+		err = db.Ping()
+		if err != nil {
+			log.Err(err).Msg("Could not ping MySQL")
+			panic(err)
+		}
+
 		instance = db
 
 		log.Printf("Connected to MySQL")

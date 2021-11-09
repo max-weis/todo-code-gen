@@ -34,9 +34,9 @@ func TestTodoControllerImpl_GetTodoById(t *testing.T) {
 
 func TestTodoControllerImpl_ListTodos(t *testing.T) {
 	list := []entity.ListTodosRow{
-		entity.ListTodosRow{ID: 1, Title: "test1"},
-		entity.ListTodosRow{ID: 2, Title: "test2"},
-		entity.ListTodosRow{ID: 3, Title: "test3"},
+		{ID: 1, Title: "test1"},
+		{ID: 2, Title: "test2"},
+		{ID: 3, Title: "test3"},
 	}
 
 	mockRepository := new(mocks.Repository)
