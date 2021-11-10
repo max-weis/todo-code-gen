@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: golang
+  name: todo-code-gen-deployment
+  labels:
+    app: todo-code-gen
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo-code-gen
+  template:
+    metadata:
+      labels:
+        app: todo-code-gen
+    spec:
+      containers:
+        - name: todo-code-gen
+          image: localhost:30000/maxweis/todo-code-gen
+          env:
+            - name: MYSQL_USER
+              value: mysql
+            - name: MYSQL_PASSWORD
+              value: mysql
+            - name: MYSQL_HOST
+              value: mysql
+            - name: MYSQL_PORT
+              value: "3306"
+            - name: MYSQL_DATABASE
+              value: todo
+          ports:
+            - containerPort: 80
